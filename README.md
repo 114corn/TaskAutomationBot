@@ -1,1 +1,1 @@
-# TaskAutomationBot
+The TaskAutomationBot project is designed to streamline and automate repetitive tasks. With its core functionality centered around a Python-based server, it efficiently handles task scheduling and execution, making it an indispensable tool for optimizing workflows. By setting up web routes and kickstarting background processes, it creates a robust environment for task management. Whether you're looking to automate simple day-to-day tasks or complex sequences of actions, TaskAutomationBot offers a flexible solution to meet your needs.
