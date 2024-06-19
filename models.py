@@ -1,9 +1,13 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 import os
 
-db = SQLAlchemy()
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///yourdatabase.db'
+db = SQLAlchemy(app)
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,3 +23,23 @@ class Task(db.Model):
     description = db.Column(db.Text, nullable=True)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+def add_user(username, email, password):
+    try:
+        new_user = User(username=username, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return True
+    except SQLAlchemyError as e:
+        print(f"Error adding user: {e}")
+        db.session.rollback()
+        return False
+
+if __name__ == '__main__':
+    db.create_all()
+
+    result = add_user('john_doe', 'johndoe@example.com', 'hashed_password123')
+    if result:
+        print("User added successfully.")
+    else:
+        print("Failed to add user.")
