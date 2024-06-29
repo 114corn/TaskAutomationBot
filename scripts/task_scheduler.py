@@ -14,15 +14,16 @@ def task2():
 def schedule_tasks():
     task1_interval = int(os.getenv('TASK1_INTERVAL', 10))
     schedule.every(task1_interval).minutes.do(task1)
+    
     task2_time = os.getenv('TASK2_TIME', '12:00')
     schedule.every().day.at(task2_time).do(task2)
 
 def run_scheduler():
+    print("Task scheduler started...")
     while True:
         schedule.run_pending()
         time.sleep(1)
 
 if __name__ == "__main__":
     schedule_tasks()
-    print("Task scheduler started...")
-    runariant_scheduler()
+    run_scheduler()
