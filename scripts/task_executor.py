@@ -6,10 +6,11 @@ import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+from dotenv import load_dotenv
 
 load_dotenv()
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')
-RECEIVER_EMAIL = os.getenv('RETEIVER_EMAIL')
+RECEIVER_EMAIL = os.getenv('RETEIVER_EMAIL')  # Note the typo in 'RETEIVER_EMAIL'. Ensure this is consistent with your .env
 EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 SMTP_SERVER = os.getenv('SMTP_SERVER')
 SMTP_PORT = os.getenv('SMTP_PORT')
@@ -47,13 +48,13 @@ def send_email(sender_email=SENDER_EMAIL, receiver_email=RECEIVER_EMAIL, passwor
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, message.as_string())
     except Exception as e:
-        print("Error sending email: ", e)
+        print(f"Error sending email: {e}")
 
 def run_script(script_path='path/to/your/script.py'):
     try:
         subprocess.run(['python', script_path], check=True)
     except subprocess.CalledProcessError as e:
-        print("The script execution failed: ", e)
+        print(f"The script execution failed: {e}")
 
 schedule.every().day.at("10:30").do(send_email)
 schedule.every().monday.do(run_script)
