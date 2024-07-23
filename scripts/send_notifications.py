@@ -4,6 +4,11 @@ from email.mime.text import MIMEText
 import os
 from twilio.rest import Client
 from dotenv import load_dotenv
+import logging
+
+# Setup logging
+logging.basicConfig(filename="notification_manager_log.txt", level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 load_dotenv()
 
@@ -27,9 +32,10 @@ class NotificationManager:
             server = smtplib.SMTP(host=EMAIL_HOST, port=EMAIL_PORT)
             server.starttls()
             server.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
+            logging.info("Email server initiated successfully")
             return server
         except Exception as e:
-            print(f"Failed to initiate email server: {e}")
+            logging.error(f"Failed to initiate email server: {e}")
             return None
 
     def send_email(self, to_email, subject, message):
@@ -42,11 +48,11 @@ class NotificationManager:
                 email.attach(MIMEText(message, 'plain'))
 
                 self.email_server.send_message(email)
-                print("Email sent successfully")
+                logging.info(f"Email sent successfully to {to_email}")
             except Exception as e:
-                print(f"Failed to send email: {e}")
+                logging.error(f"Failed to send email to {to_email}: {e}")
         else:
-            print("Email server is not available.")
+            logging.warning("Email server is not available.")
 
     def send_sms(self, to_phone_number, message):
         try:
@@ -55,20 +61,19 @@ class NotificationManager:
                 from_=TWILIO_PHONE_NUMBER,
                 to=to_phone_number
             )
-            print("SMS sent successfully")
+            logging.info(f"SMS sent successfully to {to_phone_number}")
         except Exception as e:
-            print(f"Failed to send SMS: {e}")
+            logging.error(f"Failed to send SMS to {to_phone_number}: {e}")
 
     def close_email_server(self):
         if self.email_server:
             self.email_server.quit()
-            print("Email server connection closed.")
+            logging.info("Email server connection closed.")
 
 if __name__ == "__main__":
     notification_manager = NotificationManager()
     task_completed = True
     if task_completed:
         notification_manager.send_email("example@example.com", "Task Completed", "Hey, your task is now complete.")
-        notification_comanager.remove_email_group("example@example.com")
         notification_manager.send_sms("+1234567890", "Hey, your task is now complete.")
     notification_manager.close_email_server()
