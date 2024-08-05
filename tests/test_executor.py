@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timedelta
 from task_automation_bot import TaskAutomationBot
 from unittest.mock import patch, Mock
 from os import environ
@@ -49,6 +50,18 @@ class TestTaskAutomationBot(unittest.TestCase):
 
         self.assertEqual(actual_result, expected_error_message)
         mock_fetch_task_result.assert_called_once_with(INVALID_TASK_NAME)
+
+    @patch('task_automation_bot.TaskAutomationBot.schedule_task')
+    def test_schedule_task_for_future_execution(self, mock_schedule_task):
+        task_schedule_time = datetime.now() + timedelta(days=1)
+        expected_schedule_confirmation = f"Task scheduled for {task_schedule_time}"
+
+        mock_schedule_task.return_value = expected_schedule_confirmation
+
+        actual_schedule_confirmation = self.taskBot.schedule_task(SAMPLE_TASK_NAME, task_schedule_time)
+
+        self.assertEqual(actual_schedule_confirmation, expected_schedule_confirmation)
+        mock_schedule_task.assert_called_once_with(SAMPLE_TASK_NAME, task_schedule_time)
 
 if __name__ == '__main__':
     unittest.main()
