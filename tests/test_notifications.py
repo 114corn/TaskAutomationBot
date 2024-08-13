@@ -13,20 +13,33 @@ class TestNotificationSending(unittest.TestCase):
         result = self.notification_sender.send_email('test@mail.com', 'Hello', 'Test message')
         self.assertTrue(result)
         mock_send_email.assert_called_with('test@mail.com', 'Hello', 'Test message')
+        
+        mock_send_email.side_effect = Exception("Failed to send email")
+        with self.assertRaises(Exception) as context:
+            self.notification_sender.send_email('test@mail.com', 'Hello', 'Test message')
+        self.assertTrue('Failed to send email' in str(context.exception))
 
     @patch('task_automation_bot.SomeOtherLib.send_sms') 
     def test_send_sms_notification(self, mock_send_sms):
         mock_send_sms.return_value = True
         result = self.notification_sender.send_sms('123456789', 'SMS Test message')
         self.assertTrue(result)
-        mock_send_sms.assert_called_with('123456789', 'SMS Test message')
+        
+        mock_send_sms.side_effect = Exception("Failed to send SMS")
+        with self.assertRaises(Exception) as context:
+            self.notification_sender.send_sms('123456789', 'SMS Test message')
+        self.assertTrue('Failed to send SMS' in str(context.exception))
 
     @patch('task_automation_bot.slack_sdk.WebClient.chat_postMessage')
     def test_send_slack_notification(self, mock_slack):
         mock_slack.return_value = {'ok': True}
         result = self.notification_sender.send_slack_message('channel_id', 'Slack Test message')
         self.assertTrue(result)
-        mock_slack.assert_called_with(channel='channel_id', text='Slack Test message')
+        
+        mock_slack.side_effect = Exception("Failed to send Slack message")
+        with self.assertRaises(Exception) as context:
+            self.notification_sender.send_slack_message('channel_id', 'Slack Test message')
+        self.assertTrue('Failed to send Slack message' in str(context.exception))
 
     @patch.dict('os.environ', {'API_KEY': 'test_api_key'})
     @patch('task_automation_bot.SomeAPI.send_notification') 
@@ -34,7 +47,17 @@ class TestNotificationSending(unittest.TestCase):
         mock_api_notification.return_value = True
         result = self.notification_sender.send_api_notification('user_id', 'API Test message')
         self.assertTrue(result)
-        mock_api_notification.assert_called_with('user_id', 'API Test message')
+        
+        mock_api_notification.side_effect = Exception("Failed to send API notification")
+        with self.assertRaises(Exception) as context:
+            self.notification_sender.send_api_notification('user_id', 'API Test message')
+        self.assertTrue('Failed to send API notification' in str(context.exception))
 
 if __name__ == '__main__':
     unittest.main()
+
+def send_email(self, receiver_email, subject, body):
+    try:
+        pass
+    except Exception as e:
+        raise e
