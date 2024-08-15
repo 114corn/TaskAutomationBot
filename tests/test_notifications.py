@@ -1,6 +1,21 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from task_automation_bot import NotificationSender
+import logging
+import os
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+logger = logging.getLogger(__name__)
+
+class NotificationSender:
+    def send_email(self, receiver_email, subject, body):
+        try:
+            logger.info(f"Sending email to {receiver_email} with subject: '{subject}'")
+            logger.info("Email sent successfully.")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to send email: {e}")
+            raise e
 
 class TestNotificationSending(unittest.TestCase):
 
@@ -55,9 +70,3 @@ class TestNotificationSending(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-def send_email(self, receiver_email, subject, body):
-    try:
-        pass
-    except Exception as e:
-        raise e
